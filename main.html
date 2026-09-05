@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Seminar Teknologi 2026</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #f59e0b;
+            --bg: #f8fafc;
+            --card: #fff;
+            --text: #1e293b;
+            --muted: #64748b;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), #1e40af);
+            color: #fff;
+            padding: 4rem 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 10px #0002;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: .5rem;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: .9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 1rem 4rem;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2.5rem;
+        }
+
+        .card,
+        .participant-form {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card {
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px #0002;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .participant-form {
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+            transition: .3s;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: .875rem;
+            font-weight: 600;
+            margin-bottom: .5rem;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: .75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: var(--bg);
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: .75rem 1.25rem;
+            border: 0;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .btn-cta {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 1.25rem;
+            background: var(--secondary);
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .participant-card {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: var(--bg);
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid var(--primary);
+            border-radius: 12px;
+        }
+
+        .participant-card h4 {
+            color: var(--primary);
+        }
+
+        .participant-card p {
+            color: var(--muted);
+            font-size: .85rem;
+        }
+
+        .empty-state {
+            padding: 2.5rem 1rem;
+            text-align: center;
+            color: var(--muted);
+            border: 2px dashed #e2e8f0;
+            border-radius: 12px;
+        }
+
+        .list-enter-active,
+        .list-leave-active {
+            transition: .4s;
+        }
+
+        .list-enter-from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .list-leave-to {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>{{ eventTitle }}</h1>
+            <p>Membangun Masa Depan dengan Inovasi Teknologi</p>
+        </header>
+
+        <main class="container">
+            <section>
+                <div class="card">
+                    <div class="card-title">
+                        <span>Data Pendaftar</span>
+                        <button @click="addParticipant" class="btn btn-outline">
+                            + Tambah Peserta
+                        </button>
+                    </div>
+
+                    <div v-if="participants.length === 0" class="empty-state">
+                        Belum ada peserta. Silakan tambah data peserta.
+                    </div>
+
+                    <transition-group name="list" tag="div">
+                        <div v-for="(p, index) in participants" :key="p.id" class="participant-form">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <h3 style="font-size: 0.9rem; color: var(--text-muted)">Peserta #{{ index + 1 }}</h3>
+                                <button @click="removeParticipant(index)" class="btn btn-danger">Hapus</button>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Nama Lengkap</label>
+                                    <input v-model="p.name" type="text" placeholder="Masukkan nama lengkap">
+                                </div>
+                                <div class="form-group">
+                                    <label>Umur</label>
+                                    <input v-model.number="p.age" type="number" placeholder="Umur">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Instansi</label>
+                                <input v-model="p.institution" type="text" placeholder="Nama sekolah atau perusahaan">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <textarea v-model="p.address" rows="2" placeholder="Alamat domisili saat ini"></textarea>
+                            </div>
+                        </div>
+                    </transition-group>
+
+                    <button @click="submitForm" class="btn btn-cta" v-if="participants.length > 0">
+                        Daftar Sekarang
+                    </button>
+                </div>
+            </section>
+
+            <aside>
+                <div class="card" style="position: sticky; top: 2rem;">
+                    <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">Ringkasan Pendaftaran</h2>
+                    <p style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                        Total: <strong>{{ participants.length }} Peserta</strong>
+                    </p>
+
+                    <div v-if="participants.length === 0" class="empty-state" style="padding: 1.5rem;">
+                        Isi form di samping untuk melihat ringkasan.
+                    </div>
+
+                    <div v-for="(p, index) in participants" :key="p.id" class="participant-card">
+                        <h4>{{ p.name || 'Peserta Baru' }}</h4>
+                        <p v-if="p.age">Umur: {{ p.age }} tahun</p>
+                        <p v-if="p.institution">Instansi: {{ p.institution }}</p>
+                        <p v-if="p.address" style="white-space: pre-wrap;">Alamat: {{ p.address }}</p>
+                    </div>
+
+                    <div v-if="participants.length > 0" style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.8rem; color: var(--text-muted);">
+                        * Pastikan data sudah benar sebelum mengirim.
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive } = Vue;
+
+        createApp({
+            setup() {
+                const eventTitle = ref("Seminar Teknologi 2024");
+
+                const participants = reactive([
+                    { id: Date.now(), name: '', age: '', institution: '', address: '' }
+                ]);
+
+                const addParticipant = () => {
+                    participants.push({ id: Date.now() + Math.random(), name: '', age: '', institution: '', address: '' });
+                };
+
+                const removeParticipant = (index) => {
+                    participants.splice(index, 1);
+                };
+
+                const submitForm = () => {
+                    alert('Pendaftaran Berhasil! ' + participants.length + ' data peserta telah tersimpan.');
+                    console.log('Submitted Data:', JSON.parse(JSON.stringify(participants)));
+                };
+
+                return {
+                    eventTitle, participants,
+                    addParticipant, removeParticipant, submitForm
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
